@@ -46,7 +46,7 @@ export default function Navbar() {
 
           <div className="d-grid gap-2 d-lg-flex">
             <Link
-              to="/register"
+              to="/signup"
               className="btn btn-outline-light mb-2 mb-lg-0"
             >
               Sign Up

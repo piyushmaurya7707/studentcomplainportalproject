@@ -7,6 +7,9 @@ import Signup from './components/signup.jsx'
 import About from './components/About.jsx'
 
 import Login from './components/Login.jsx'
+import ComplaintPage from './components/ComplainPage.jsx'
+import LoginPage from './components/Login.jsx'
+import AdminPage from './components/AdminPage.jsx'
 function App() {
   
 
@@ -19,6 +22,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/about" element={<About />} />
+        <Route path="/Loginpage" element={<ComplaintPage />} />
+        <Route path="/complaints" element={<AdminPage />} />
+       
       </Routes>
     </BrowserRouter>
     </>

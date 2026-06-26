@@ -49,9 +49,9 @@ export default function Login() {
           </div>
 
           {/* Login Button */}
-          <button type="submit" className="btn btn-primary w-100">
+          <Link to="/Loginpage" className="btn btn-primary w-100">
             Login
-          </button>
+          </Link>
 
           {/* Links */}
           <div className="text-center mt-3">
