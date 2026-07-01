@@ -10,6 +10,7 @@ import Login from './components/Login.jsx'
 import ComplaintPage from './components/ComplainPage.jsx'
 import LoginPage from './components/Login.jsx'
 import AdminPage from './components/AdminPage.jsx'
+import SaftyMap from './components/SaftyMap.jsx'
 function App() {
   
 
@@ -24,6 +25,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/Loginpage" element={<ComplaintPage />} />
         <Route path="/complaints" element={<AdminPage />} />
+        <Route path="/map" element={<SaftyMap />} />
        
       </Routes>
     </BrowserRouter>

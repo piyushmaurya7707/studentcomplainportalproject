@@ -58,6 +58,12 @@ export default function Navbar() {
             >
               Login
             </Link>
+            <Link
+              to="/map"
+              className="btn btn-light"
+            >
+              safty map
+            </Link>
           </div>
 
         </div>
