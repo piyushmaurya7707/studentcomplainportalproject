@@ -1,39 +1,100 @@
-import React from "react";
 import { Link } from "react-router-dom";
+import { api } from "../services/api";  
+import React, { useState } from 'react';
 
-export default function signup() {
+export default function Signup() {
+  
+  const [formData,setFormData] = useState({
+    fullName: "",
+    email: "",
+    mobileNumber: "",
+    password: "",
+    conformPassword: ""
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e)=>{
+    setFormData({
+      ...formData,
+      [e.target.name] : e.target.value,
+
+
+    });
+
+   
+
+  }
+   const handleSubmit = async(e)=>{
+    e.preventDefault();
+    setLoading(true);
+
+
+    if( formData.password !== formData.conformPassword){
+      alert("password doesnot match");
+      setLoding(false);          
+        
+
+
+      return;
+    } 
+    try{
+          const response = await api.post("/signup",{
+            fullName: formData.fullName,
+            email: formData.email,
+            mobileNumber: formData.mobileNumber,
+            password: formData.password,
+             conformPassword: formData.conformPassword
+          });
+          alert(response.data.message);
+          console.log(response.data.message);
+        
+        }catch(error)
+           {
+              if (error.response) {
+        alert(error.response.data.message || "Registration failed");
+      } else {
+        alert("Something went wrong!");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+             
+
+
+    
+
+
   return (
-    <div
-      className="container d-flex justify-content-center align-items-center py-5"
-      style={{ minHeight: "100vh" }}
-    >
+    <div className="container d-flex justify-content-center align-items-center py-5" style={{ minHeight: "100vh" }}>
       <div className="card shadow p-4" style={{ maxWidth: "500px", width: "100%" }}>
         <div className="text-center mb-4">
           <h2>Student Registration</h2>
-          <p className="text-muted">
-            Create an account to raise complaints.
-          </p>
+          <p className="text-muted">Create an account to raise complaints.</p>
         </div>
 
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label className="form-label">Full Name</label>
             <input
               type="text"
+              name="fullName"
               className="form-control"
-              placeholder="Enter your full name"
+              value={formData.fullName}
+              onChange={handleChange}
               required
             />
           </div>
-
-          
 
           <div className="mb-3">
             <label className="form-label">Email Address</label>
             <input
               type="email"
+              name="email"
               className="form-control"
-              placeholder="Enter email"
+              value={formData.email}
+              onChange={handleChange}
               required
             />
           </div>
@@ -42,18 +103,22 @@ export default function signup() {
             <label className="form-label">Mobile Number</label>
             <input
               type="tel"
+              name="mobileNumber"
               className="form-control"
-              placeholder="Enter mobile number"
+              value={formData.mobileNumber}
+              onChange={handleChange}
               required
             />
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Set your Student Complaint Portal Password</label>
+            <label className="form-label">Password</label>
             <input
               type="password"
+              name="password"
               className="form-control"
-              placeholder="Create password"
+              value={formData.password}
+              onChange={handleChange}
               required
             />
           </div>
@@ -62,14 +127,16 @@ export default function signup() {
             <label className="form-label">Confirm Password</label>
             <input
               type="password"
+              name="conformPassword"
               className="form-control"
-              placeholder="Confirm password"
+              value={formData.conformPassword}
+              onChange={handleChange}
               required
             />
           </div>
 
-          <button type="submit" className="btn btn-success w-100">
-            Sign Up
+          <button type="submit" className="btn btn-success w-100" disabled={loading}>
+            {loading ? "Signing Up..." : "Sign Up"}
           </button>
         </form>
 
