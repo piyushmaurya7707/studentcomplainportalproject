@@ -23,17 +23,23 @@ function ComplaintPage() {
 
   const [submitMessage, setSubmitMessage] = useState({ type: "", text: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
+ 
+  const fetchComplaints = async () => {
+    try {
+      // FIX: Replace this placeholder string with your actual API endpoint URL
+      const res = await fetch("https://api.example.com/complaints");
+      if (!res.ok) throw new Error("Failed to fetch complaints");
+      
+      const data = await res.json();
+      setComplaints(data);
+    } catch (error) {
+      console.error("Error fetching complaints:", error);
+    }
+  };
 
-  // Load complaints from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem("complaints");
-    if (saved) setComplaints(JSON.parse(saved));
+    fetchComplaints();
   }, []);
-
-  // Save complaints to localStorage
-  useEffect(() => {
-    localStorage.setItem("complaints", JSON.stringify(complaints));
-  }, [complaints]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -45,40 +51,65 @@ function ComplaintPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.fullName || !formData.email || !formData.title || 
-        !formData.type || !formData.description) {
-      setSubmitMessage({ type: "error", text: "❌ Please fill all required fields" });
-      return;
-    }
-
     setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 800));
+    setSubmitMessage({ type: "", text: "" });
 
-    const newComplaint = {
-      id: Date.now(),
-      ...formData,
-      viewed: false,
-      accepted: false,
-      status: "Pending",
-      reply: "Thank you for your complaint. Our team will review it within 48 hours.",
-      image: files.images.length > 0 ? files.images[0].name : null,
-      video: files.videos.length > 0 ? files.videos[0].name : null,
-      document: files.documents.length > 0 ? files.documents[0].name : null,
-      submittedAt: new Date().toLocaleString(),
-    };
+    try {
+      /* 
+        NOTE ON FILES: 
+        Because you have file uploads, you should eventually switch this to a 
+        FormData object instead of JSON.stringify(formData) so files actually send to your server.
+      */
+      // FIX: Replace this placeholder string with your actual API submission URL
+      const res = await fetch("https://api.example.com/complaints", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      
+      const data = await res.json();
 
-    setComplaints([newComplaint, ...complaints]);
-
-    // Reset form
-    setFormData({
-      fullName: "", email: "", phone: "", title: "", type: "",
-      priority: "Medium", incidentDate: "", description: "", expectedResolution: ""
-    });
-    setFiles({ images: [], videos: [], documents: [] });
-    setSubmitMessage({ type: "success", text: "✅ Complaint submitted successfully!" });
-
-    setTimeout(() => setSubmitMessage({ type: "", text: "" }), 4000);
-    setIsSubmitting(false);
+      if (res.ok) {
+        // FIX: Corrected typos here
+        setSubmitMessage({
+          type: "success",
+          text: "Complaint submitted successfully!",
+        });
+      
+        fetchComplaints();
+      
+        // Reset Form
+        setFormData({
+          fullName: "",
+          email: "",
+          phone: "",
+          title: "",
+          type: "",
+          priority: "Medium",
+          incidentDate: "",
+          description: "",
+          expectedResolution: "",
+        });
+        
+        // Reset Files
+        setFiles({ images: [], videos: [], documents: [] });
+      } else {
+        setSubmitMessage({
+          type: "error",
+          text: data.message || "Something went wrong.",
+        });
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      setSubmitMessage({
+        type: "error",
+        text: "Could not connect to the server.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -203,10 +234,13 @@ function ComplaintPage() {
           <p className="cmp-no-complaints">No complaints submitted yet.</p>
         ) : (
           complaints.map((item) => (
-            <div className="cmp-complaint-card" key={item.id}>
+            <div className="cmp-complaint-card" key={item.id || item._id}>
               <div className="cmp-card-header">
                 <h3>{item.title}</h3>
-                <span className={`cmp-status ${item.status.toLowerCase()}`}>{item.status}</span>
+                {/* FIX: Safe optional chaining applied below to prevent crashing if properties are missing */}
+                <span className={`cmp-status ${(item.status || "pending").toLowerCase()}`}>
+                  {item.status || "Pending"}
+                </span>
               </div>
               <div className="cmp-card-body">
                 <p><strong>Name:</strong> {item.fullName}</p>
@@ -218,10 +252,10 @@ function ComplaintPage() {
                 <div className="cmp-status-details">
                   <p><strong>Viewed:</strong> {item.viewed ? "✅ Yes" : "❌ No"}</p>
                   <p><strong>Accepted:</strong> {item.accepted ? "✅ Yes" : "❌ No"}</p>
-                  <p><strong>Submitted:</strong> {item.submittedAt}</p>
+                  {item.submittedAt && <p><strong>Submitted:</strong> {item.submittedAt}</p>}
                 </div>
 
-                <p><strong>Admin Reply:</strong> {item.reply}</p>
+                {item.reply && <p><strong>Admin Reply:</strong> {item.reply}</p>}
 
                 {(item.image || item.video || item.document) && (
                   <div className="cmp-attachments">

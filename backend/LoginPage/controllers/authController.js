@@ -34,7 +34,7 @@ const regerstration = async (req,res)=>{
             });
     }catch(error){
        return res.status(201).json({
-    message: "User has successfully registered"
+    message: "internal server error !"
         
         });
 
