@@ -3,21 +3,26 @@ const mongoose = require('mongoose');
 const complainSchema = new mongoose.Schema({
     fullName: {
         type: String,
-        requiement: true,
+        required: true,
         minlength: [2,"length is too short "]
     },
-    
-    phoneNumber: {
+     email: {
         type: String,
-        requiement: true,
+        required: true
+    
+    },
+    
+    phone: {
+        type: String,
+        required: true,
         unique: true,
         minlength: [10,"min length should be 10"],
         maxlength: [10, "min length should be 10"],
 
     },
-    complaintTitle: {
+    title: {
         type: String,
-        requiement: true,
+        required: true,
 
     },
     
@@ -26,10 +31,10 @@ const complainSchema = new mongoose.Schema({
         maxLength: [500, "max 500 length string"]
 
     },
-    complainType: String,
-    priorityLevel: String,
-    DateOfIncident: String,
-    ExpectedResolution: String,
+    type: String,
+    priority: String,
+    incidentDate: String,
+    expectedResolution: String,
 
     viewed: {
         type: Boolean,

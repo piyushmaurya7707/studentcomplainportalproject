@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 
 
 
-const regerstration = async (req,res)=>{
+const registration = async (req,res)=>{
     try{
         const { fullName , email ,mobileNumber, password , conformPassword } = req.body;
         const checkUser= await  User.findOne({ email });
@@ -34,7 +34,7 @@ const regerstration = async (req,res)=>{
             });
     }catch(error){
        return res.status(201).json({
-    message: "internal server error !"
+    message: error.message
         
         });
 
@@ -76,7 +76,7 @@ const regerstration = async (req,res)=>{
     }
 };
 
-        module.exports = { regerstration , login };
+        module.exports = { registration , login };
 
 
 

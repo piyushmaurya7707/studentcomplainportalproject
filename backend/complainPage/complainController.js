@@ -1,16 +1,32 @@
-import ComplaintPageSchema from "../complainPage/complainPageSchema.js";
+const ComplaintPageSchema = require("../complainPage/complainPageSchema.js");
 
-const complain = async(req,res) => {
+
+const complainController = async(req,res) => {
 
     
 try{
-    const {fullName,phoneNumber,complaintTitle, description,viewed,accepted, Status,reply,image , video,
-    document,sumbittedAt} = req.body;
+    const {fullName, 
+    email, 
+    phone, 
+    title, 
+    type,
+    priority, 
+    incidentDate, 
+    description,
+    expectedResolution
+  } = req.body;
            
     const  complainPageSchema= new ComplaintPageSchema({
 
-        fullName,phoneNumber,complaintTitle, description,viewed,accepted, Status,reply,imagevideo,
-    document,sumbittedAt});
+       fullName, 
+    email, 
+    phone, 
+    title, 
+    type,
+    priority, 
+    incidentDate, 
+    description,
+    expectedResolution});
 
     
     await complainPageSchema.save();
@@ -28,7 +44,7 @@ try{
 
 }
 
-export default complain;
+module.exports = complainController;
 
 
 

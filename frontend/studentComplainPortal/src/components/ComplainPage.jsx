@@ -26,8 +26,8 @@ function ComplaintPage() {
  
   const fetchComplaints = async () => {
     try {
-      // FIX: Replace this placeholder string with your actual API endpoint URL
-      const res = await fetch("https://api.example.com/complaints");
+    
+      const res = await fetch("http://192.168.29.161:3000/api/auth/complainPage");
       if (!res.ok) throw new Error("Failed to fetch complaints");
       
       const data = await res.json();
@@ -61,7 +61,7 @@ function ComplaintPage() {
         FormData object instead of JSON.stringify(formData) so files actually send to your server.
       */
       // FIX: Replace this placeholder string with your actual API submission URL
-      const res = await fetch("https://api.example.com/complaints", {
+      const res = await fetch("http://192.168.29.161:3000/api/auth/complainPage", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
