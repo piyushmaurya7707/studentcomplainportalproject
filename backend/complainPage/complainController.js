@@ -1,4 +1,4 @@
-const ComplaintPageSchema = require("../complainPage/complainPageSchema.js");
+const ComplaintSchema = require("../complainPage/complainPageSchema.js");
 
 
 const complainController = async(req,res) => {
@@ -7,7 +7,7 @@ const complainController = async(req,res) => {
 try{
     const {fullName, 
     email, 
-    phone, 
+    
     title, 
     type,
     priority, 
@@ -16,11 +16,11 @@ try{
     expectedResolution
   } = req.body;
            
-    const  complainPageSchema= new ComplaintPageSchema({
+    const  complainSchema= new ComplaintSchema({
 
-       fullName, 
+    fullName, 
     email, 
-    phone, 
+     
     title, 
     type,
     priority, 
@@ -29,16 +29,17 @@ try{
     expectedResolution});
 
     
-    await complainPageSchema.save();
+    await complainSchema.save();
     return res.status(201).json({
         message: "sumbit succesfully"
     });
 
 
     } catch(error){
+      console.log(error);
   return res.status(500).json({
-    message: "not sumbit"
-  });
+    message: error.message   
+  }).send(error);
 
 }
 

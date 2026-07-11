@@ -6,7 +6,7 @@ function ComplaintPage() {
   const [formData, setFormData] = useState({
     fullName: "", 
     email: "", 
-    phone: "", 
+ 
     title: "", 
     type: "",
     priority: "Medium", 
@@ -84,7 +84,7 @@ function ComplaintPage() {
         setFormData({
           fullName: "",
           email: "",
-          phone: "",
+          
           title: "",
           type: "",
           priority: "Medium",
@@ -130,10 +130,7 @@ function ComplaintPage() {
               <label>Email Address <span className="cmp-required">*</span></label>
               <input type="email" name="email" value={formData.email} onChange={handleChange} required />
             </div>
-            <div className="cmp-form-row">
-              <label>Phone Number</label>
-              <input type="tel" name="phone" value={formData.phone} onChange={handleChange} />
-            </div>
+            
           </div>
 
           {/* Complaint Details */}

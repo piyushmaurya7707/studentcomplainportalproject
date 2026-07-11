@@ -12,14 +12,8 @@ const complainSchema = new mongoose.Schema({
     
     },
     
-    phone: {
-        type: String,
-        required: true,
-        unique: true,
-        minlength: [10,"min length should be 10"],
-        maxlength: [10, "min length should be 10"],
-
-    },
+    
+   
     title: {
         type: String,
         required: true,
@@ -71,7 +65,7 @@ const complainSchema = new mongoose.Schema({
 
  });
 
- const usercomplainSchema = mongoose.model("usercomplainSchema",complainSchema);
+ const usercomplainSchema = mongoose.model("complainSchema",complainSchema);
 
 
  module.exports = usercomplainSchema;
