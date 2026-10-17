@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import classroom from "../assets/classroom.jpg";
 import student from "../assets/student.jpg";
+import "./Home.css"
 
 export default function Home() {
   return (

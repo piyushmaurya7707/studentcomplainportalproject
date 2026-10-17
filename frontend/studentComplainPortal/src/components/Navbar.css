@@ -1,0 +1,195 @@
+
+
+.sw-navbar {
+  padding: 0.75rem 0;
+}
+
+
+
+.sw-nav-list {
+  position: relative;
+  gap: 0.25rem;
+}
+
+.sw-indicator {
+  position: absolute;
+  top: 3px;
+  left: 0;
+  height: calc(100% - 6px);
+  
+
+  
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 0.7rem;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+  z-index: 0;
+  pointer-events: none;
+  transition: transform 0.35s cubic-bezier(0.65, 0, 0.35, 1),
+    width 0.35s cubic-bezier(0.65, 0, 0.35, 1),
+    opacity 0.2s ease;
+}
+
+.sw-nav-link {
+  position: relative;
+  z-index: 1;
+  font-weight: 500;
+  padding: 0.5rem 1.1rem !important;
+  border-radius: 0.6rem;
+  transition: color 0.25s ease, opacity 0.25s ease;
+  opacity: 0.85;
+}
+
+.sw-nav-link:hover {
+  opacity: 1;
+  color: #ffffff !important;
+}
+
+.sw-nav-link.active {
+  opacity: 1;
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+.sw-nav-link::after {
+  content: "";
+  position: absolute;
+  left: 1.1rem;
+  right: 1.1rem;
+  bottom: 0.15rem;
+  height: 2px;
+  background: #ffffff;
+  border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
+.sw-nav-link:hover::after,
+.sw-nav-link.active::after {
+  transform: scaleX(1);
+}
+
+.navbar-toggler {
+  border: none;
+  box-shadow: none !important;
+}
+
+/* ---------- Mobile off-canvas drawer ---------- */
+
+.sw-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 6, 7, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s ease;
+  z-index: 1040;
+}
+
+.sw-backdrop.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sw-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 280px;
+  max-width: 82vw;
+  background: #0d6efd;
+  background: linear-gradient(130deg, black 0%,black 100%);
+  box-shadow: 8px 0 32px rgba(0, 0, 0, 0.25);
+  transform: translateX(-100%);
+  transition: transform 0.35s cubic-bezier(0.65, 0, 0.35, 1);
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem 1.25rem 2rem;
+}
+
+.sw-drawer.show {
+  transform: translateX(0);
+}
+
+.sw-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(253, 248, 248, 0.15);
+}
+
+.sw-drawer-close {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 1.75rem;
+  line-height: 1;
+  padding: 0 0.25rem;
+  opacity: 0.85;
+}
+
+.sw-drawer-close:hover {
+  opacity: 1;
+}
+
+.sw-drawer-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.sw-drawer-link {
+  display: block;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+  font-size: 1.05rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.6rem;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease, padding-left 0.2s ease;
+}
+
+.sw-drawer-link:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  padding-left: 1.1rem;
+}
+
+.sw-drawer-link.active {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.sw-drawer-actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(238, 236, 255, 0.15);
+}
+
+.sw-drawer-actions .btn {
+  width: 100%;
+}
+
+/* Drawer only exists for mobile/tablet — desktop uses the inline pill nav */
+@media (min-width: 992px) {
+  .sw-drawer,
+  .sw-backdrop {
+    display: none;
+  }
+}

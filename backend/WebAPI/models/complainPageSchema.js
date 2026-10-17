@@ -1,29 +1,27 @@
 const mongoose = require('mongoose');
 
 const complainSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+    },
     fullName: {
         type: String,
         required: true,
-        minlength: [2,"length is too short "]
+        minlength: [2, "length is too short "]
     },
-     email: {
+    email: {
         type: String,
         required: true
-    
     },
-    
-    
-   
     title: {
         type: String,
         required: true,
-
     },
-    
     description: {
         type: String,
         maxLength: [500, "max 500 length string"]
-
     },
     type: String,
     priority: String,
@@ -33,20 +31,15 @@ const complainSchema = new mongoose.Schema({
     viewed: {
         type: Boolean,
         default: false
-    
     },
-    accepted: 
-    {
+    accepted: {
         type: Boolean,
         default: false,
-
     },
-
     Status: {
         type: String,
         default: "pending"
     },
-
     reply: {
         type: String,
         default: "Thank you for your complaint"
@@ -56,17 +49,12 @@ const complainSchema = new mongoose.Schema({
     video: String,
     document: String,
 
-     submittedAt: {
-        
-        type: Date,
-        default: Date.now
-     }
+ }, { timestamps: true });
 
-
- });
-
- const usercomplainSchema = mongoose.model("complainSchema",complainSchema);
-
+ const usercomplainSchema = mongoose.model("complainSchema", complainSchema);
 
  module.exports = usercomplainSchema;
+
+
+
  

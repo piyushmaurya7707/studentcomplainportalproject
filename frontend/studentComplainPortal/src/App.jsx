@@ -11,6 +11,7 @@ import ComplaintPage from './components/ComplainPage.jsx'
 import LoginPage from './components/Login.jsx'
 import AdminPage from './components/AdminPage.jsx'
 import SaftyMap from './components/SaftyMap.jsx'
+import Othercomplain from "./components/OtherComplaint.jsx"
 function App() {
   
 
@@ -26,6 +27,7 @@ function App() {
         <Route path="/complaint" element={<ComplaintPage />} />
         <Route path="/complaints" element={<AdminPage />} />
         <Route path="/map" element={<SaftyMap />} />
+        <Route path="/other-complaint" element={<Othercomplain />}/>
        
       </Routes>
     </BrowserRouter>

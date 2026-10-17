@@ -1,77 +1,483 @@
-.admin-container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: 'Segoe UI', sans-serif;
-  background: #f8f9fa;
+/* ==================== DESIGN SYSTEM ==================== */
+:root {
+  --bg-main: #f8fafc;          /* Pure slate white background */
+  --bg-card: #ffffff;          /* White card background */
+  --bg-card-hover: #f1f5f9;    /* Light gray hover state for cards */
+  --text-main: #0f172a;        /* Deep dark slate primary text */
+  --text-muted: #64748b;       /* Cool gray muted text */
+  --border-color: #e2e8f0;     /* Soft gray border divider color */
+  
+  /* Brand Accents */
+  --primary: #4f46e5;          /* Vibrant Indigo */
+  --primary-hover: #3730a3;
+  
+  /* Tier Accents */
+  --color-low: #2563eb;        /* Classic Blue */
+  --color-high: #d97706;       /* Warm Amber */
+  --color-important: #dc2626;   /* Rich Crimson Red */
+
+  /* Status Accents */
+  --status-pending: #475569;   /* Slate Gray */
+  --status-resolved: #16a34a;  /* Active Green */
+  --status-rejected: #e11d48;  /* Active Red */
+}
+
+/* ==================== GLOBAL STYLES ==================== */
+.admin-page {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-main);
   min-height: 100vh;
+  padding: 2rem;
+  box-sizing: border-box;
 }
 
-.admin-container h1 {
-  text-align: center;
-  color: #2c3e50;
-  margin-bottom: 30px;
+/* ==================== HEADER ==================== */
+.admin-header {
+  margin-bottom: 2rem;
 }
 
-.user-list, .user-detail {
-  background: white;
-  padding: 25px;
+.admin-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  margin: 0 0 0.5rem 0;
+  color: var(--text-main);
+}
+
+.admin-header p {
+  color: var(--text-muted);
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* ==================== TOOLBAR & FILTERS ==================== */
+.admin-toolbar {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  padding: 1rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
 }
 
-.user-card {
-  padding: 18px;
-  border: 1px solid #ddd;
+.toolbar-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.search-box, .state-box {
+  display: flex;
+  align-items: center;
+  background-color: var(--bg-main);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  margin-bottom: 15px;
+  padding: 0.5rem 0.75rem;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 200px;
+}
+
+.search-box svg, .state-box svg {
+  color: var(--text-muted);
+}
+
+.search-box input, .state-box select {
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  outline: none;
+  font-size: 0.9rem;
+  width: 100%;
+}
+
+.state-box select {
   cursor: pointer;
-  transition: 0.3s;
+  appearance: none;
 }
 
-.user-card:hover {
-  background: #f0f8ff;
-  transform: translateX(5px);
+.common-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--bg-card);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.admin-complaint-card {
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 20px;
+.common-btn:hover {
+  background-color: var(--bg-card-hover);
+  color: var(--text-main);
 }
 
-.admin-card-header {
+.common-btn.active {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+}
+
+/* ==================== MAIN SECTION GRID ==================== */
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.section h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--text-main);
+}
+
+/* ==================== CARDS CONTAINER ==================== */
+.cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 3rem 1rem;
+  background-color: var(--bg-card);
+  border: 1px dashed var(--border-color);
+  border-radius: 12px;
+}
+
+/* ==================== COMPLAINT CARDS ==================== */
+.complaint-card {
+  position: relative;
+  display: block;
+  width: 100%;
+  text-align: left;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+  overflow: hidden;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+}
+
+.complaint-card:hover {
+  background-color: var(--bg-card-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+/* Left colored vertical bar for priority complaints */
+.tier-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 5px;
+}
+
+.tier-bar.tier-low { background-color: var(--color-low); }
+.tier-bar.tier-high { background-color: var(--color-high); }
+.tier-bar.tier-important { background-color: var(--color-important); }
+
+.card-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
+  align-items: flex-start;
+  gap: 1rem;
 }
 
-.admin-controls {
+.card-title {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.card-meta {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.card-desc {
+  margin: 0 0 1rem 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  display: -webkit-box;
+  /* -webkit-line-clamp: 2; */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-chevron {
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.card-badges {
   display: flex;
-  gap: 15px;
   flex-wrap: wrap;
-  margin: 15px 0;
+  gap: 0.5rem;
+  align-items: center;
 }
 
-.back-btn {
-  margin-bottom: 20px;
-  padding: 10px 18px;
-  background: #3498db;
-  color: white;
+.card-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
+/* ==================== BADGES ==================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge.neutral {
+  background-color: #f1f5f9;
+  color: var(--text-muted);
+}
+
+.badge.status-pending {
+  background-color: #f1f5f9;
+  color: var(--status-pending);
+}
+
+.badge.status-resolved {
+  background-color: #dcfce7;
+  color: var(--status-resolved);
+}
+
+.badge.status-rejected {
+  background-color: #ffe4e6;
+  color: var(--status-rejected);
+}
+
+.badge.tier-low {
+  background-color: #dbeafe;
+  color: var(--color-low);
+}
+
+.badge.tier-high {
+  background-color: #fef3c7;
+  color: var(--color-high);
+}
+
+.badge.tier-important {
+  background-color: #fee2e2;
+  color: var(--color-important);
+}
+
+/* ==================== TIER TABS ==================== */
+.tier-tabs {
+  display: flex;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 0.25rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  gap: 0.25rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.tier-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.25rem;
+  background: transparent;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
+  color: var(--text-muted);
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-/* Mobile Responsive */
-@media (max-width: 768px) {
-  .admin-controls {
-    flex-direction: column;
+.tier-tab:hover {
+  color: var(--text-main);
+  background-color: var(--bg-main);
+}
+
+.tier-tab.active {
+  background-color: var(--primary);
+  color: #ffffff;
+}
+
+.tier-tab .price {
+  font-size: 0.8rem;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+/* ==================== MODALS ==================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 1rem;
+}
+
+.modal-box {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 550px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: modalSlide 0.25s ease-out;
+}
+
+@keyframes modalSlide {
+  from {
+    transform: translateY(15px);
+    opacity: 0;
   }
-  .admin-card-header {
-    flex-direction: column;
-    align-items: flex-start;
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.close-btn:hover {
+  background-color: var(--bg-card-hover);
+  color: var(--text-main);
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-body p {
+  margin: 0 0 1rem 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.modal-body p strong {
+  color: var(--text-main);
+  display: inline-block;
+  min-width: 100px;
+}
+
+.modal-body textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background-color: var(--bg-main);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.75rem;
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.9rem;
+  resize: vertical;
+  outline: none;
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.modal-body textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+/* ==================== ACTION BUTTONS ==================== */
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.approve-btn, .reject-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.approve-btn {
+  background-color: #16a34a;
+  border: none;
+  color: #ffffff;
+}
+
+.approve-btn:hover {
+  background-color: #15803d;
+}
+
+.reject-btn {
+  background-color: #fff1f2;
+  border: 1px solid var(--status-rejected);
+  color: var(--status-rejected);
+}
+
+.reject-btn:hover {
+  background-color: var(--status-rejected);
+  color: #ffffff;
 }

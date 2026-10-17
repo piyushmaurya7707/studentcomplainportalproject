@@ -1,52 +1,72 @@
 import React, { useState, useEffect } from "react";
+import api from "../services/api";
 import "./ComplainPage.css";
 
 function ComplaintPage() {
   const [complaints, setComplaints] = useState([]);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [submitMessage, setSubmitMessage] = useState({ type: "", text: "" });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [formData, setFormData] = useState({
-    fullName: "", 
-    email: "", 
- 
-    title: "", 
+    fullName: "",
+    email: "",
+    title: "",
     type: "",
-    priority: "Medium", 
-    incidentDate: "", 
-    description: "", 
+    priority: "Medium",
+    incidentDate: "",
+    description: "",
     expectedResolution: "",
   });
 
-  const [files, setFiles] = useState({
-    images: [], 
-    videos: [], 
-    documents: []
-  });
+  // Load user from localStorage
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
+      setFormData((prev) => ({
+        ...prev,
+        fullName: parsedUser.fullName || "",
+        email: parsedUser.email || "",
+      }));
+    }
+  }, []);
 
-  const [submitMessage, setSubmitMessage] = useState({ type: "", text: "" });
-  const [isSubmitting, setIsSubmitting] = useState(false);
- 
+  // Fetch complaints
   const fetchComplaints = async () => {
+    setLoading(true);
     try {
-    
-      const res = await fetch("http://192.168.29.161:3000/api/auth/complainPage");
-      if (!res.ok) throw new Error("Failed to fetch complaints");
-      
-      const data = await res.json();
-      setComplaints(data);
+      const res = await api.get("/complaint");   // This will call /api/auth/complaint
+      setComplaints(res.data.complains || res.data || []);
     } catch (error) {
       console.error("Error fetching complaints:", error);
+      if (error.response?.status === 401) {
+        setSubmitMessage({
+          type: "error",
+          text: "Session expired. Please login again.",
+        });
+      } else {
+        setSubmitMessage({
+          type: "error",
+          text: error.response?.data?.message || "Failed to load complaints",
+        });
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Fetch complaints when user is loaded
   useEffect(() => {
-    fetchComplaints();
-  }, []);
+    if (user) {
+      fetchComplaints();
+    }
+  }, [user]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleFile = (type, e) => {
-    setFiles({ ...files, [type]: Array.from(e.target.files) });
   };
 
   const handleSubmit = async (e) => {
@@ -55,36 +75,18 @@ function ComplaintPage() {
     setSubmitMessage({ type: "", text: "" });
 
     try {
-      /* 
-        NOTE ON FILES: 
-        Because you have file uploads, you should eventually switch this to a 
-        FormData object instead of JSON.stringify(formData) so files actually send to your server.
-      */
-      // FIX: Replace this placeholder string with your actual API submission URL
-      const res = await fetch("http://192.168.29.161:3000/api/auth/complainPage", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-      
-      const data = await res.json();
+      const res = await api.post("/complaint", formData);   // → /api/auth/complaint
 
-      if (res.ok) {
-        // FIX: Corrected typos here
+      if (res.data.success) {
         setSubmitMessage({
           type: "success",
           text: "Complaint submitted successfully!",
         });
-      
-        fetchComplaints();
-      
-        // Reset Form
+
+        // Reset form
         setFormData({
-          fullName: "",
-          email: "",
-          
+          fullName: user?.fullName || "",
+          email: user?.email || "",
           title: "",
           type: "",
           priority: "Medium",
@@ -92,20 +94,15 @@ function ComplaintPage() {
           description: "",
           expectedResolution: "",
         });
-        
-        // Reset Files
-        setFiles({ images: [], videos: [], documents: [] });
-      } else {
-        setSubmitMessage({
-          type: "error",
-          text: data.message || "Something went wrong.",
-        });
+
+        // Refresh complaints list
+        fetchComplaints();
       }
     } catch (error) {
-      console.error("Submission error:", error);
+      console.error(error);
       setSubmitMessage({
         type: "error",
-        text: "Could not connect to the server.",
+        text: error.response?.data?.message || "Failed to submit complaint",
       });
     } finally {
       setIsSubmitting(false);
@@ -124,13 +121,24 @@ function ComplaintPage() {
             <h3>Personal Information</h3>
             <div className="cmp-form-row">
               <label>Full Name <span className="cmp-required">*</span></label>
-              <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} required />
+              <input
+                type="text"
+                name="fullName"
+                value={formData.fullName}
+                onChange={handleChange}
+                required
+              />
             </div>
             <div className="cmp-form-row">
               <label>Email Address <span className="cmp-required">*</span></label>
-              <input type="email" name="email" value={formData.email} onChange={handleChange} required />
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
             </div>
-            
           </div>
 
           {/* Complaint Details */}
@@ -138,7 +146,14 @@ function ComplaintPage() {
             <h3>Complaint Details</h3>
             <div className="cmp-form-row">
               <label>Complaint Title <span className="cmp-required">*</span></label>
-              <input type="text" name="title" placeholder="Brief title of your complaint" value={formData.title} onChange={handleChange} required />
+              <input
+                type="text"
+                name="title"
+                placeholder="Brief title of your complaint"
+                value={formData.title}
+                onChange={handleChange}
+                required
+              />
             </div>
             <div className="cmp-form-row">
               <label>Complaint Type <span className="cmp-required">*</span></label>
@@ -163,16 +178,19 @@ function ComplaintPage() {
             </div>
             <div className="cmp-form-row">
               <label>Date of Incident</label>
-              <input type="date" name="incidentDate" value={formData.incidentDate} onChange={handleChange} />
+              <input
+                type="date"
+                name="incidentDate"
+                value={formData.incidentDate}
+                onChange={handleChange}
+              />
             </div>
           </div>
 
-          {/* Description */}
           <div className="cmp-form-group">
             <label>Description <span className="cmp-required">*</span></label>
             <textarea
               name="description"
-              placeholder="Please provide detailed information about your complaint..."
               value={formData.description}
               onChange={handleChange}
               rows="6"
@@ -180,46 +198,41 @@ function ComplaintPage() {
             />
           </div>
 
-          {/* Expected Resolution */}
           <div className="cmp-form-group">
             <label>Expected Resolution (Optional)</label>
             <textarea
               name="expectedResolution"
-              placeholder="What resolution are you expecting?"
               value={formData.expectedResolution}
               onChange={handleChange}
               rows="3"
             />
           </div>
 
-          {/* File Uploads */}
+          {/* File Uploads - Uncomment when backend supports files */}
+          {/* 
           <div className="cmp-form-group">
-            <h3>Supporting Documents (Optional)</h3>
-            
-            <div className="cmp-file-upload">
-              <label>Upload Images</label>
-              <input type="file" accept="image/*" multiple onChange={(e) => handleFile("images", e)} />
-              {files.images.length > 0 && <p className="cmp-file-name">Selected: {files.images.map(f => f.name).join(", ")}</p>}
-            </div>
-
-            <div className="cmp-file-upload">
-              <label>Upload Video</label>
-              <input type="file" accept="video/*" onChange={(e) => handleFile("videos", e)} />
-              {files.videos.length > 0 && <p className="cmp-file-name">Selected: {files.videos[0].name}</p>}
-            </div>
-
-            <div className="cmp-file-upload">
-              <label>Upload Documents (PDF, DOC, DOCX)</label>
-              <input type="file" accept=".pdf,.doc,.docx" onChange={(e) => handleFile("documents", e)} />
-              {files.documents.length > 0 && <p className="cmp-file-name">Selected: {files.documents[0].name}</p>}
-            </div>
+            <label>Upload Images (Optional)</label>
+            <input type="file" multiple accept="image/*" />
           </div>
+          <div className="cmp-form-group">
+            <label>Upload Videos (Optional)</label>
+            <input type="file" multiple accept="video/*" />
+          </div>
+          <div className="cmp-form-group">
+            <label>Upload Documents (Optional)</label>
+            <input type="file" multiple accept=".pdf,.doc,.docx" />
+          </div>
+          */}
 
           {submitMessage.text && (
             <p className={`cmp-message ${submitMessage.type}`}>{submitMessage.text}</p>
           )}
 
-          <button type="submit" disabled={isSubmitting} className="cmp-submit-btn">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="cmp-submit-btn"
+          >
             {isSubmitting ? "Submitting..." : "Submit Complaint"}
           </button>
         </form>
@@ -227,42 +240,22 @@ function ComplaintPage() {
 
       <div className="cmp-complaints-section">
         <h2>My Complaints ({complaints.length})</h2>
-        {complaints.length === 0 ? (
-          <p className="cmp-no-complaints">No complaints submitted yet.</p>
+
+        {loading ? (
+          <p>Loading complaints...</p>
+        ) : complaints.length === 0 ? (
+          <p>No complaints found.</p>
         ) : (
-          complaints.map((item) => (
-            <div className="cmp-complaint-card" key={item.id || item._id}>
-              <div className="cmp-card-header">
-                <h3>{item.title}</h3>
-                {/* FIX: Safe optional chaining applied below to prevent crashing if properties are missing */}
-                <span className={`cmp-status ${(item.status || "pending").toLowerCase()}`}>
-                  {item.status || "Pending"}
-                </span>
-              </div>
-              <div className="cmp-card-body">
-                <p><strong>Name:</strong> {item.fullName}</p>
-                <p><strong>Type:</strong> {item.type}</p>
-                <p><strong>Priority:</strong> {item.priority}</p>
-                {item.incidentDate && <p><strong>Incident Date:</strong> {item.incidentDate}</p>}
-                <p><strong>Description:</strong> {item.description}</p>
-                
-                <div className="cmp-status-details">
-                  <p><strong>Viewed:</strong> {item.viewed ? "✅ Yes" : "❌ No"}</p>
-                  <p><strong>Accepted:</strong> {item.accepted ? "✅ Yes" : "❌ No"}</p>
-                  {item.submittedAt && <p><strong>Submitted:</strong> {item.submittedAt}</p>}
-                </div>
-
-                {item.reply && <p><strong>Admin Reply:</strong> {item.reply}</p>}
-
-                {(item.image || item.video || item.document) && (
-                  <div className="cmp-attachments">
-                    <strong>Attachments:</strong>
-                    {item.image && <p>📷 {item.image}</p>}
-                    {item.video && <p>🎥 {item.video}</p>}
-                    {item.document && <p>📄 {item.document}</p>}
-                  </div>
-                )}
-              </div>
+          complaints.map((complaint, index) => (
+            <div key={complaint._id || index} className="complaint-item">
+              <h3>{complaint.title}</h3>
+              <p><strong>Type:</strong> {complaint.type}</p>
+              <p><strong>Priority:</strong> {complaint.priority}</p>
+              <p><strong>Description:</strong> {complaint.description}</p>
+              <p><strong>Status:</strong> {complaint.Status || "Pending"}</p>
+              <small>
+                Submitted: {new Date(complaint.createdAt).toLocaleDateString()}
+              </small>
             </div>
           ))
         )}

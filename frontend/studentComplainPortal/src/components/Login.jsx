@@ -1,6 +1,7 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
-import { api } from "../services/api";
+import api from "../services/api";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -25,30 +26,28 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     setError("");
-try {
-  const response = await api.post("/login", {
-    email: formData.email,
-    password: formData.password,
-  });
 
-  console.log(response.data);
+    try {
+      const response = await api.post("/login", {
+        email: formData.email,
+        password: formData.password,
+      });
 
-  if (response.data.success) {
-    localStorage.setItem("isLoggedIn", "true");
-    alert(response.data.message);
-    navigate("/complaint");
-  }
-} catch (err) {
-  console.error(err);
+      if (response.data.success) {
+        const { token, user } = response.data; // Adjust based on actual response
 
-  if (err.response) {
-    setError(err.response.data.message);
-  } else {
-    setError("Cannot connect to server");
-  }
-} finally {
-  setLoading(false);
-}
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("isLoggedIn", "true");
+
+        navigate("/complaint");
+      }
+    } catch (err) {
+      console.error(err);
+      setError(err.response?.data?.message || "Login failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
